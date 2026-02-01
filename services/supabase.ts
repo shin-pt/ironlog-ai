@@ -32,7 +32,13 @@ export const supabase = createClient(
     auth: {
       autoRefreshToken: true,
       persistSession: true,
-      detectSessionInUrl: true
+      detectSessionInUrl: true,
+      flowType: 'pkce' // PKCEフローを使用（より安全）
+    },
+    global: {
+      headers: {
+        'x-client-info': 'ironlog-ai'
+      }
     }
   }
 );
