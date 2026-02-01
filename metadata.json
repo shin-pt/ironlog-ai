@@ -1,0 +1,5 @@
+{
+  "name": "IronLog AI",
+  "description": "A smart workout tracker that allows you to log exercises, visualize progress, and export summaries to Markdown using Gemini AI.",
+  "requestFramePermissions": []
+}
