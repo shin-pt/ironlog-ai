@@ -25,7 +25,7 @@ const App: React.FC = () => {
 
   // ユーザーごとのlocalStorageキーを取得
   const storageKey = useMemo(() => {
-    return user ? `ironlog_sessions_${user.uid}` : 'ironlog_sessions';
+    return user ? `ironlog_sessions_${user.id}` : 'ironlog_sessions';
   }, [user]);
 
   // Load from local storage on mount
@@ -176,10 +176,10 @@ const App: React.FC = () => {
               💡 <span className="hidden sm:inline">次のおすすめ</span>
             </button>
             <div className="flex items-center gap-2">
-              {user.photoURL && (
+              {user.user_metadata?.avatar_url && (
                 <img 
-                  src={user.photoURL} 
-                  alt={user.displayName || 'User'} 
+                  src={user.user_metadata.avatar_url} 
+                  alt={user.user_metadata?.full_name || user.email || 'User'} 
                   className="w-8 h-8 rounded-full border border-slate-700"
                 />
               )}
