@@ -45,7 +45,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           
           if (error) {
             console.error('セッション設定エラー:', error);
+            setUser(null);
           } else if (session) {
+            setUser(session.user);
             // URLをクリーンアップ
             window.history.replaceState({}, document.title, window.location.pathname);
           }
@@ -54,8 +56,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           const { data: { session }, error } = await supabase.auth.getSession();
           if (error) {
             console.error('セッション取得エラー:', error);
+            setUser(null);
+          } else {
+            setUser(session?.user ?? null);
           }
-          setUser(session?.user ?? null);
         }
         setLoading(false);
       } catch (error) {
