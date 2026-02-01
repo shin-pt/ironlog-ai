@@ -33,7 +33,9 @@ export const supabase = createClient(
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
-      flowType: 'pkce' // PKCEフローを使用（より安全）
+      flowType: 'pkce', // PKCEフローを使用（より安全）
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      storageKey: 'supabase.auth.token',
     },
     global: {
       headers: {
@@ -42,5 +44,14 @@ export const supabase = createClient(
     }
   }
 );
+
+// デバッグ用: 環境変数の確認
+if (typeof window !== 'undefined') {
+  console.log('Supabase設定:', {
+    url: supabaseUrl ? '設定済み' : '未設定',
+    key: supabaseAnonKey ? '設定済み' : '未設定',
+    urlValue: supabaseUrl?.substring(0, 30) + '...',
+  });
+}
 
 export default supabase;

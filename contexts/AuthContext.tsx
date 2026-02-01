@@ -97,6 +97,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = async () => {
     try {
       const redirectTo = `${window.location.origin}${window.location.pathname}`;
+      console.log('Google認証を開始:', { redirectTo });
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -105,17 +107,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             access_type: 'offline',
             prompt: 'consent',
           },
+          skipBrowserRedirect: false,
         },
       });
       
       if (error) {
         console.error('Supabase認証エラー:', error);
+        console.error('エラー詳細:', {
+          message: error.message,
+          status: error.status,
+          name: error.name,
+        });
         throw new Error(`認証エラー: ${error.message}`);
       }
       
+      console.log('OAuth認証リダイレクト:', data);
       // OAuth認証はリダイレクトされるため、ここでは何もしない
-    } catch (error) {
+    } catch (error: any) {
       console.error('ログインエラー:', error);
+      console.error('エラー詳細:', {
+        message: error?.message,
+        stack: error?.stack,
+      });
       throw error;
     }
   };
