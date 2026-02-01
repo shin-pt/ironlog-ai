@@ -31,11 +31,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // OAuth認証後のリダイレクト処理
     const handleAuthCallback = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('セッション取得エラー:', error);
+        // URLフラグメントからセッションを取得（OAuth認証後のリダイレクト時）
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        
+        if (accessToken && refreshToken) {
+          // URLフラグメントからセッションを設定
+          const { data: { session }, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          
+          if (error) {
+            console.error('セッション設定エラー:', error);
+          } else if (session) {
+            // URLをクリーンアップ
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        } else {
+          // 通常のセッション取得
+          const { data: { session }, error } = await supabase.auth.getSession();
+          if (error) {
+            console.error('セッション取得エラー:', error);
+          }
+          setUser(session?.user ?? null);
         }
-        setUser(session?.user ?? null);
         setLoading(false);
       } catch (error) {
         console.error('認証処理エラー:', error);
@@ -54,6 +75,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         setUser(session?.user ?? null);
+        // URLをクリーンアップ
+        if (window.location.hash) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
       } else {
